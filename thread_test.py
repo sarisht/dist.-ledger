@@ -1,0 +1,51 @@
+import threading
+import time
+
+exitFlag = 0
+
+class timeThread (threading.Thread):
+   def __init__(self, threadID, name, counter):
+      threading.Thread.__init__(self)
+      self.threadID = threadID
+      self.name = name
+      self.counter = counter
+   def run(self):
+      print "Starting " + self.name
+      print_time(self.name, self.counter, 5)
+      print "Exiting " + self.name
+
+def print_input(threadName, counter):
+   while counter:
+      some_inp = raw_input()
+      print(threadName+' '+some_inp)
+      counter-=1
+
+class inputThread (threading.Thread):
+   def __init__(self, threadID, name, counter):
+      threading.Thread.__init__(self)
+      self.threadID = threadID
+      self.name = name
+      self.counter = counter
+   def run(self):
+      print "Starting " + self.name
+      print_input(self.name, self.counter)
+      print "Exiting " + self.name
+
+
+def print_time(threadName, counter, delay):
+   while counter:
+      if exitFlag:
+         threadName.exit()
+      time.sleep(delay)
+      print "%s: %s" % (threadName, time.ctime(time.time()))
+      counter -= 1
+
+# Create new threads
+thread1 = timeThread(1, "Thread-1", 10)
+thread2 = inputThread(2, "Thread-2", 10)
+
+# Start new Threads
+thread1.start()
+thread2.start()
+
+print "Exiting Main Thread"
